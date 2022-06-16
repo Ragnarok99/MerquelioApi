@@ -1,9 +1,11 @@
-from anyio import connect_tcp
+import os
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-SQL_ALCHEMY_DATABASE = "sqlite:///./db.sqlite"
+os.getenv('DB_URL')
+
+SQL_ALCHEMY_DATABASE = os.getenv('DB_URL')
 
 engine = create_engine(SQL_ALCHEMY_DATABASE, connect_args={
                        "check_same_thread": False})
