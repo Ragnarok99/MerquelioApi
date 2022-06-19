@@ -6,7 +6,6 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
 import time
 
-os.environ['PATH'] = os.path.join(os.path.dirname(__file__), 'webDrivers')
 
 USER_EMAIL = os.getenv('USER_EMAIL')
 USER_PASSWORD = os.getenv('USER_PASSWORD')
@@ -99,11 +98,27 @@ def get_lower_cost_product(test, product_name):
 
 def search(products):
 
-    options = webdriver.ChromeOptions()
-    options.add_argument('--incognito')
-    # options.add_argument('--headless')
+    current_environment = os.getenv("ENV")
+    driver = None
+    if current_environment == "dev":
+        os.environ['PATH'] = os.path.join(
+            os.path.dirname(__file__), 'webDrivers')
 
-    driver = webdriver.Chrome(options=options)
+        options = webdriver.ChromeOptions()
+        options.add_argument('--incognito')
+        # options.add_argument('--headless')
+
+        driver = webdriver.Chrome(options=options)
+    else:
+        chrome_options = webdriver.ChromeOptions()
+        chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
+        chrome_options.add_argument('--incognito')
+        chrome_options.add_argument('--disable-dev-shm-usuage')
+        chrome_options.add_argument('--headless')
+        chrome_options.add_argument('--no-sandbox')
+        driver = webdriver.Chrome(executable_path=os.environ.get(
+            "CHROME_DRIVER_PATH"), options=chrome_options)
+
     driver.get("https://domicilios.tiendasd1.com")
 
     driver.implicitly_wait(6)
