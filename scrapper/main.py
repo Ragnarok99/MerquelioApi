@@ -124,6 +124,8 @@ def search(products):
     driver.implicitly_wait(6)
 
     try:
+        WebDriverWait(driver, 50).until(
+            EC.visibility_of_element_located((By.CLASS_NAME, "user__account")))
         logInPopupElement = driver.find_element(By.CLASS_NAME, "user__account")
         logInPopupElement.click()
 
