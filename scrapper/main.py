@@ -123,28 +123,29 @@ def search(products):
 
     driver.implicitly_wait(6)
 
-    logInPopupElement = driver.find_element(By.CLASS_NAME, "user__account")
-    logInPopupElement.click()
+    try:
+        logInPopupElement = driver.find_element(By.CLASS_NAME, "user__account")
+        logInPopupElement.click()
 
-    logInElement = driver.find_element(By.XPATH,
-                                       "/html/body/div[3]/div/div/div/label[3]/span[2]/div")
-    driver.implicitly_wait(6)
+        logInElement = driver.find_element(By.XPATH,
+                                           "/html/body/div[3]/div/div/div/label[3]/span[2]/div")
+        driver.implicitly_wait(6)
 
-    logInElement.click()
+        logInElement.click()
 
-    driver.implicitly_wait(6)
+        driver.implicitly_wait(6)
 
-    email_input = driver.find_element(By.ID, "signup_email")
-    password_input = driver.find_element(By.ID, "signup_password")
+        email_input = driver.find_element(By.ID, "signup_email")
+        password_input = driver.find_element(By.ID, "signup_password")
 
-    email_input.send_keys(USER_EMAIL)
-    email_input.send_keys(Keys.TAB)
+        email_input.send_keys(USER_EMAIL)
+        email_input.send_keys(Keys.TAB)
 
-    password_input.send_keys(USER_PASSWORD)
-    password_input.send_keys(Keys.ENTER)
-
-    driver.implicitly_wait(10)
-    driver.execute_script('window.localStorage.clear();')
+        password_input.send_keys(USER_PASSWORD)
+        password_input.send_keys(Keys.ENTER)
+    except Exception as error:
+        print('error ', error)
+        return driver.get_screenshot_as_base64()
 
     try:
         shipping_button = driver.find_element(
