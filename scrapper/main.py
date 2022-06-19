@@ -146,18 +146,18 @@ def search(products):
     driver.implicitly_wait(10)
     driver.execute_script('window.localStorage.clear();')
 
-    # try:
-    #     shipping_button = driver.find_element(
-    #         By.XPATH, '/html/body/div[5]/div/div[2]/div/div[2]/div[2]/div/div/div')
+    try:
+        shipping_button = driver.find_element(
+            By.XPATH, '/html/body/div[5]/div/div[2]/div/div[2]/div[2]/div/div/div')
 
-    #     shipping_button.click()
+        shipping_button.click()
 
-    #     home_address = driver.find_element(
-    #         By.XPATH, '/html/body/div[5]/div/div[2]/div/div[2]/div[2]/div[1]/div/div[1]')
+        home_address = driver.find_element(
+            By.XPATH, '/html/body/div[5]/div/div[2]/div/div[2]/div[2]/div[1]/div/div[1]')
 
-    #     home_address.click()
-    # except:
-    #     print('didnt find the shippment or home address modal')
+        home_address.click()
+    except:
+        print('didnt find the shippment or home address modal')
 
     driver.implicitly_wait(10)
 
