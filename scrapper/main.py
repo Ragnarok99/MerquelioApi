@@ -109,8 +109,10 @@ def search(products):
 
         driver = webdriver.Chrome(options=options)
     else:
+        options = webdriver.ChromeOptions()
+        options.add_argument("--disable-dev-shm-usage")
         driver = webdriver.Remote(
-            'http://selenium:4444/wd/hub', desired_capabilities=DesiredCapabilities.CHROME)
+            'http://selenium:4444/wd/hub', desired_capabilities=DesiredCapabilities.CHROME, options=options)
 
     driver.implicitly_wait(3)
     driver.get("https://domicilios.tiendasd1.com")
@@ -169,13 +171,10 @@ def search(products):
         search_input = search_input_container.find_element(
             By.CLASS_NAME, 'ant-input')
         if search_input.get_attribute("value") != "":
-            # clear_input = search_input_container.find_element(
-            #     By.CSS_SELECTOR, 'button.ant-btn.ant-btn-primary.ant-input-search-button')
             clear_input = driver.find_element(
                 By.XPATH, '/html/body/div[1]/div/div[1]/div/div[1]/div[4]/div/span/span/span[1]/span[2]/span/button')
             clear_input.click()
 
-        # search_input.clear()
         search_input.send_keys(product.name)
         search_input.send_keys(Keys.ENTER)
 
