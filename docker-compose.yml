@@ -1,0 +1,23 @@
+version: "3.9"
+services:
+  selenium:
+    image: selenium/standalone-chrome
+    ports:
+      - "4444:4444"
+    restart: always
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - DB_URL=sqlite:///./db.sqlite
+      - USER_EMAIL=evc.naq@hotmail.com
+      - USER_PASSWORD=Abrilloana9999
+      - ENV=prod
+    volumes:
+      - .:/code
+    depends_on:
+      - selenium
