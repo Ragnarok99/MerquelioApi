@@ -1,11 +1,11 @@
 import os
 from selenium import webdriver
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
 import time
-
 
 USER_EMAIL = os.getenv('USER_EMAIL')
 USER_PASSWORD = os.getenv('USER_PASSWORD')
@@ -22,7 +22,7 @@ def empty_shopping_cart(driver):
     except Exception as error:
         print("not badge count found")
 
-    if(items_count is None):
+    if (items_count is None):
         return
 
     open_cart_button = open_cart_container.find_element(
@@ -31,17 +31,17 @@ def empty_shopping_cart(driver):
 
     driver.implicitly_wait(6)
 
-    if(items_count == 1):
+    if (items_count == 1):
         cart_products = driver.find_elements(By.CLASS_NAME, 'cart__product')
         for product in cart_products:
-            while(True):
+            while (True):
                 try:
                     # wait for product to be updated, maybe it's bettter to use EC here...
                     time.sleep(1)
                     driver.implicitly_wait(16)
                     product_quantity = int(product.find_element(
                         By.CLASS_NAME, 'number-spinner__spinner__value').text, 10)
-                    if(product_quantity == 1):
+                    if (product_quantity == 1):
                         remove_product_button = product.find_element(
                             By.CLASS_NAME, 'number-spinner__spinner__remove-btn')
                         remove_product_button.click()
@@ -85,7 +85,7 @@ def get_lower_cost_product(test, product_name):
         current_product_cost = int(product.find_element(
             By.CLASS_NAME, 'prod--default__price__current').text.replace('$', '').replace('.', ''), 10)
 
-        if(current_product_cost < lower_cost):
+        if (current_product_cost < lower_cost):
             lower_cost = current_product_cost
             lower_cost_product = product
 
@@ -97,7 +97,6 @@ def get_lower_cost_product(test, product_name):
 
 
 def search(products):
-
     current_environment = os.getenv("ENV")
     driver = None
     if current_environment == "dev":
@@ -105,23 +104,17 @@ def search(products):
             os.path.dirname(__file__), 'webDrivers')
 
         options = webdriver.ChromeOptions()
-        options.add_argument('--incognito')
-        # options.add_argument('--headless')
+        # options.add_argument('--incognito')
+        # # options.add_argument('--headless')
 
         driver = webdriver.Chrome(options=options)
     else:
-        chrome_options = webdriver.ChromeOptions()
-        chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
-        chrome_options.add_argument('--incognito')
-        chrome_options.add_argument('--disable-dev-shm-usuage')
-        chrome_options.add_argument('--headless')
-        chrome_options.add_argument('--no-sandbox')
-        driver = webdriver.Chrome(executable_path=os.environ.get(
-            "CHROME_DRIVER_PATH"), options=chrome_options)
+        driver = webdriver.Remote(
+            'http://selenium:4444/wd/hub', desired_capabilities=DesiredCapabilities.CHROME)
 
+    driver.implicitly_wait(3)
     driver.get("https://domicilios.tiendasd1.com")
-
-    driver.implicitly_wait(6)
+    driver.save_screenshot('wtf.png')
 
     try:
         WebDriverWait(driver, 50).until(
@@ -130,7 +123,7 @@ def search(products):
         logInPopupElement.click()
 
         logInElement = driver.find_element(By.XPATH,
-                                           "/html/body/div[3]/div/div/div/label[3]/span[2]/div")
+                                           "/html/body/div[3]/div/div/div/button[3]")
         driver.implicitly_wait(6)
 
         logInElement.click()
@@ -146,8 +139,9 @@ def search(products):
         password_input.send_keys(USER_PASSWORD)
         password_input.send_keys(Keys.ENTER)
     except Exception as error:
-        print('error ', error)
-        return driver.get_screenshot_as_base64()
+        driver.save_screenshot('wtf.png')
+        print('not logged in')
+        return error
 
     try:
         shipping_button = driver.find_element(
@@ -162,11 +156,11 @@ def search(products):
     except:
         print('didnt find the shippment or home address modal')
 
-    driver.implicitly_wait(10)
+    driver.implicitly_wait(4)
 
     results_list = []
 
-    # empty_shopping_cart(driver)
+    empty_shopping_cart(driver)
 
     for product in products:
         search_input_container = driver.find_element(
@@ -178,10 +172,10 @@ def search(products):
             # clear_input = search_input_container.find_element(
             #     By.CSS_SELECTOR, 'button.ant-btn.ant-btn-primary.ant-input-search-button')
             clear_input = driver.find_element(
-                By.XPATH, '//*[@id="app"]/div/div[1]/div/div[1]/div[5]/div/span/span/span[1]/span[2]/button')
+                By.XPATH, '/html/body/div[1]/div/div[1]/div/div[1]/div[4]/div/span/span/span[1]/span[2]/span/button')
             clear_input.click()
 
-        search_input.clear()
+        # search_input.clear()
         search_input.send_keys(product.name)
         search_input.send_keys(Keys.ENTER)
 
@@ -194,6 +188,8 @@ def search(products):
             print("product not found ", product.name)
 
         results_list.append(search_result)
+
+    driver.quit()
 
     return results_list
     ############ add product for the final order ############

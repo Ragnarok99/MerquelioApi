@@ -8,7 +8,6 @@ from scrapper.main import search
 import models
 import schemas
 
-
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
